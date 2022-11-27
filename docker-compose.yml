@@ -1,0 +1,31 @@
+version: '3.4'
+
+x-default-settings:
+  &default-settings
+  logging:
+    driver: journald
+  restart: unless-stopped
+
+services:
+  web:
+    << : *default-settings
+    build: .
+    depends_on: [api]
+    image: egortensin/wg-api-web:latest
+    ports:
+      - '8080:80'
+  api:
+    << : *default-settings
+    image: james/wg-api:latest
+    cap_add:
+      - NET_ADMIN
+    network_mode: host
+    command: wg-api --device vpn --listen 192.168.177.1:1234
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.177.0/24

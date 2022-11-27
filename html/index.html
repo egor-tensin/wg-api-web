@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+html {
+  font-size: 16px;
+  font-family: sans-serif;
+}
+body {
+  margin: 2rem;
+}
+@media(max-width: 600px) {
+  body {
+    margin: .5rem;
+  }
+}
+
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 1.5rem;
+  border-spacing: 0;
+}
+th, td {
+  text-align: left;
+  padding: 3px 8px;
+}
+th {
+  border-bottom: 2px solid black;
+}
+td, th[scope="row"] {
+  border-bottom: 1px solid black;
+}
+
+.right {
+  text-align: right;
+}
+    </style>
+  </head>
+  <body>
+    <main>
+      <table>
+        <tbody>
+          <tr id="device_name">
+            <th scope="row">Device</th>
+            <td>-</td>
+          </tr>
+          <tr id="device_public_key">
+            <th scope="row">Public key</th>
+            <td>-</td>
+          </tr>
+          <tr id="device_listen_port">
+            <th scope="row">Listen port</th>
+            <td>-</td>
+          </tr>
+          <tr id="device_num_peers">
+            <th scope="row"># of peers</th>
+            <td>-</td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th>Public key</th>
+            <th>Last handshake</th>
+            <th>Endpoint</th>
+            <th>Rx</th>
+            <th>Tx</th>
+            <th>Allowed IPs</th>
+            <th>Preshared key?</th>
+          </tr>
+        </thead>
+        <tbody id="tbody_peers">
+        </tbody>
+      </table>
+    </main>
+  <script>
+const KB = 1024;
+const MB = 1024 * KB;
+const GB = 1024 * MB;
+
+function bytes_to_readable(bytes) {
+    if (bytes == 0)
+        return '-';
+    if (bytes < MB)
+        return '< 1 MiB';
+    if (bytes < GB)
+        return `${Math.round(bytes / MB)} MiB`;
+    let result = (bytes / GB).toFixed(1);
+    if (result.endsWith('.0'))
+        result = result.substring(0, result.length - 2);
+    return `${result} GiB`;
+}
+
+const MSECS_IN_SEC = 1000;
+const MSECS_IN_MIN = 60 * MSECS_IN_SEC;
+const MSECS_IN_HOUR = 60 * MSECS_IN_MIN;
+const MSECS_IN_DAY = 24 * MSECS_IN_HOUR;
+
+function date_to_readable(date) {
+    const now = Date.now();
+    if (Date.now() < date) {
+        return 'future???';
+    }
+
+    let duration = now - date;
+
+    let days = Math.floor(duration / MSECS_IN_DAY);
+    duration -= days * MSECS_IN_DAY;
+
+    let hours = Math.floor(duration / MSECS_IN_HOUR);
+    duration -= hours * MSECS_IN_HOUR;
+
+    let mins = Math.floor(duration / MSECS_IN_MIN);
+    duration -= mins * MSECS_IN_MIN;
+
+    let secs = Math.floor(duration / MSECS_IN_SEC);
+    duration -= secs * MSECS_IN_SEC;
+
+    if (days > 364)
+        return '-';
+
+    if (days > 0) {
+        let result = `${days}d`;
+        if (days == 1 && hours > 0)
+            result += ` ${hours}h`;
+        return result;
+    }
+
+    if (hours > 0) {
+        let result = `${hours}h`;
+        if (hours == 1 && mins > 0)
+            result += ` ${mins}m`;
+        return result;
+    }
+
+    if (mins > 0) {
+        let result = `${mins}m`;
+        if (mins == 1 && secs > 0)
+            result += ` ${secs}s`;
+        return result;
+    }
+
+    return ` ${secs}s`;
+}
+
+function in_code(text) {
+    let code = document.createElement('code');
+    code.appendChild(document.createTextNode(text));
+    return code;
+}
+
+function send_request(endpoint, callback) {
+    let request = new XMLHttpRequest();
+    request.addEventListener('load', callback);
+    request.open('GET', '/api/' + endpoint);
+    request.send();
+}
+
+var Field = function(key) {
+    this.key = key;
+}
+
+Field.prototype.cell_container = function() {
+    return document.createElement('td');
+}
+
+Field.prototype.cell_contents = function(value) {
+    return [document.createTextNode(value)];
+}
+
+Field.prototype.create_cell = function(peer) {
+    let cell = this.cell_container();
+    let value = peer[this.key];
+    let contents = this.cell_contents(value);
+    contents.forEach(function(elem) {
+        cell.appendChild(elem);
+    });
+    return cell;
+}
+
+var PublicKey = function() {
+    Field.call(this, 'public_key');
+}
+
+PublicKey.prototype = Object.create(Field.prototype);
+PublicKey.prototype.constructor = PublicKey;
+
+PublicKey.prototype.cell_contents = function(value) {
+    return [in_code(value)];
+}
+
+var LastHandshake = function() {
+    Field.call(this, 'last_handshake');
+}
+
+LastHandshake.prototype = Object.create(Field.prototype);
+LastHandshake.prototype.constructor = LastHandshake;
+
+LastHandshake.prototype.cell_contents = function(value) {
+    value = Date.parse(value);
+    value = date_to_readable(value);
+    return Field.prototype.cell_contents.call(this, value);
+}
+
+var Endpoint = function() {
+    Field.call(this, 'endpoint');
+}
+
+Endpoint.prototype = Object.create(Field.prototype);
+Endpoint.prototype.constructor = Endpoint;
+
+Endpoint.prototype.cell_contents = function(value) {
+    if (value == "<nil>")
+        value = '-';
+    return Field.prototype.cell_contents.call(this, value);
+}
+
+var Rx = function() {
+    Field.call(this, 'receive_bytes');
+}
+
+Rx.prototype = Object.create(Field.prototype);
+Rx.prototype.constructor = Rx;
+
+Rx.prototype.cell_container = function() {
+    var cell = Field.prototype.cell_container.call(this);
+    cell.setAttribute('class', 'right');
+    return cell;
+}
+
+Rx.prototype.cell_contents = function(value) {
+    value = parseInt(value);
+    value = bytes_to_readable(value);
+    return Field.prototype.cell_contents.call(this, value);
+}
+
+var Tx = function() {
+    Field.call(this, 'transmit_bytes');
+}
+
+Tx.prototype = Object.create(Field.prototype);
+Tx.prototype.constructor = Tx;
+
+Tx.prototype.cell_container = Rx.prototype.cell_container;
+Tx.prototype.cell_contents = Rx.prototype.cell_contents;
+
+var AllowedIPs = function() {
+    Field.call(this, 'allowed_ips');
+}
+
+AllowedIPs.prototype = Object.create(Field.prototype);
+AllowedIPs.prototype.constructor = AllowedIPs;
+
+AllowedIPs.prototype.cell_contents = function(value) {
+    let result = [];
+    value.forEach(function(ip) {
+        result.push(in_code(ip));
+        result.push(document.createElement('br'));
+    });
+    return result;
+}
+
+var HasPresharedKey = function() {
+    Field.call(this, 'has_preshared_key');
+}
+
+HasPresharedKey.prototype = Object.create(Field.prototype);
+HasPresharedKey.prototype.constructor = HasPresharedKey;
+
+HasPresharedKey.prototype.cell_contents = function(value) {
+    if (value) {
+        value = '\u2714';
+    } else {
+        value = '\u2718';
+    }
+    return Field.prototype.cell_contents.call(this, value);
+}
+
+var Device = function() {
+    this.fields = [
+        new Field('name'),
+        new PublicKey(),
+        new Field('listen_port'),
+        new Field('num_peers'),
+    ];
+}
+
+Device.prototype.update = function(data) {
+    this.fields.forEach(function(field) {
+        var row = document.getElementById('device_' + field.key);
+        row.removeChild(row.lastElementChild);
+        row.appendChild(field.create_cell(data));
+    });
+}
+
+function peers_get_tbody() {
+    return document.getElementById('tbody_peers');
+}
+
+var Peer = function() {
+    this.fields = [
+        new PublicKey(),
+        new LastHandshake(),
+        new Endpoint(),
+        new Rx(),
+        new Tx(),
+        new AllowedIPs(),
+        new HasPresharedKey()
+    ];
+    this.table = peers_get_tbody();
+}
+
+Peer.prototype.create_row = function(peer) {
+    let row = document.createElement('tr');
+    this.fields.forEach(function(field) {
+        row.appendChild(field.create_cell(peer));
+    });
+    return row;
+}
+
+Peer.prototype.add_row = function(peer) {
+    this.table.appendChild(this.create_row(peer));
+}
+
+function peers_remove_all() {
+    let table = peers_get_tbody();
+    while (table.firstChild) {
+        table.removeChild(table.firstChild);
+    }
+}
+
+function device_show() {
+    let formatter = new Device();
+    let data = JSON.parse(this.responseText);
+    formatter.update(data['result']['device']);
+}
+
+function peers_show() {
+    peers_remove_all();
+    let formatter = new Peer();
+    let data = JSON.parse(this.responseText);
+    data['result']['peers'].forEach(function(peer) {
+        formatter.add_row(peer);
+    });
+}
+
+function device_update() {
+    send_request('GetDeviceInfo', device_show);
+}
+
+function peers_update() {
+    send_request('ListPeers', peers_show);
+}
+
+function update() {
+    device_update();
+    peers_update();
+}
+
+var update_interval_seconds = 30;
+
+function loop() {
+    setInterval(function() {
+        update();
+    }, update_interval_seconds * 1000);
+}
+
+function main() {
+    update();
+    loop();
+}
+
+main();
+  </script>
+  </body>
+</html>
