@@ -12,7 +12,7 @@ services:
     depends_on: [api]
     image: egortensin/wg-api-web:latest
     ports:
-      - '8080:80'
+      - '8090:80'
     volumes:
       - './data:/data:ro'
   api:
