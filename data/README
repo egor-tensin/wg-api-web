@@ -1,0 +1,3 @@
+The aliases file has the following format: each line represents a peer. It
+must start with a public key; the key is separated from its readable alias by
+whitespace. The rest of the line (after the whitespace) is the key's alias.

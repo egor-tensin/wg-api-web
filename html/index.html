@@ -65,7 +65,7 @@ td, th[scope="row"] {
       <table>
         <thead>
           <tr>
-            <th>Public key</th>
+            <th>Peer</th>
             <th>Last handshake</th>
             <th>Endpoint</th>
             <th>Rx</th>
@@ -191,6 +191,8 @@ PublicKey.prototype = Object.create(Field.prototype);
 PublicKey.prototype.constructor = PublicKey;
 
 PublicKey.prototype.cell_contents = function(value) {
+    if (value in aliases)
+        value = aliases[value];
     return [in_code(value)];
 }
 
@@ -349,6 +351,20 @@ function peers_show() {
     });
 }
 
+var aliases = {};
+
+function aliases_parse(data) {
+    aliases = {};
+    data.split(/\r?\n/).forEach(function(line) {
+        let delim = line.match(/\s+/);
+        if (!delim)
+            return;
+        let key = line.slice(0, delim.index);
+        let alias = line.slice(delim.index + delim[0].length);
+        aliases[key] = alias;
+    });
+}
+
 function device_update() {
     send_request('GetDeviceInfo', device_show);
 }
@@ -357,9 +373,16 @@ function peers_update() {
     send_request('ListPeers', peers_show);
 }
 
+function aliases_update() {
+    send_request('aliases', function() {
+        aliases_parse(this.responseText);
+        peers_update();
+    });
+}
+
 function update() {
     device_update();
-    peers_update();
+    aliases_update();
 }
 
 var update_interval_seconds = 30;
