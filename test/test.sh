@@ -7,6 +7,8 @@ script_dir="$( dirname -- "${BASH_SOURCE[0]}" )"
 script_dir="$( cd -- "$script_dir" && pwd )"
 readonly script_dir
 
+devices_only=
+
 base_dir="$( mktemp -d )"
 readonly base_dir
 
@@ -136,7 +138,7 @@ cleanup() {
         local name
         find "$base_dir/devices" -mindepth 1 -maxdepth 1 -type d -printf '%P\0' \
                 | while IFS= read -d '' -r name; do
-            echo "Removing interface: $name"
+            echo "Removing device: $name"
             ip link delete "$name" type wireguard || true
         done
     fi
@@ -144,16 +146,41 @@ cleanup() {
     echo "Removing $base_dir"
     rm -rf -- "$base_dir"
 
-    echo "Brining down containers..."
-    docker-compose down -v --remove-orphans
+    if [ -z "$devices_only" ]; then
+        echo "Brining down containers..."
+        docker-compose down -v --remove-orphans
+    fi
 }
 
 main() {
     cd -- "$script_dir/.."
     trap cleanup EXIT
+
+    local opt
+    while getopts ':i' opt "$@"; do
+        case "$opt" in
+            i)
+                devices_only=1
+                ;;
+            :)
+                echo "usage error: required argument missing for option -$OPTARG" >&2
+                exit 1;
+                ;;
+            *)
+                echo "usage error: invalid option -$OPTARG" >&2;
+                exit 1;
+                ;;
+        esac
+    done
+
     add_devices
-    build_services
-    check_api
+
+    if [ -z "$devices_only" ]; then
+        build_services
+        check_api
+    else
+        while true; do sleep 1; done
+    fi
 }
 
-main
+main "$@"
