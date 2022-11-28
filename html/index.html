@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>wg-api-web</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/gh/tofsjonas/sortable/sortable-base.min.css" rel="stylesheet">
@@ -351,7 +352,9 @@ function peers_remove_all() {
 function device_show() {
     let formatter = new Device();
     let data = JSON.parse(this.responseText);
-    formatter.update(data['result']['device']);
+    data = data['result']['device'];
+    document.title = `${data['name']} - ${data['num_peers']} peer(s) - wg-api-web`;
+    formatter.update(data);
 }
 
 function peers_show() {
