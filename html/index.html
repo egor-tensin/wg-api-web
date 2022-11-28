@@ -25,18 +25,15 @@ table {
   border-spacing: 0;
 }
 th, td {
-  text-align: left;
   padding: 3px 8px;
 }
 th {
+  text-align: center;
   border-bottom: 2px solid black;
 }
 td, th[scope="row"] {
+  text-align: left;
   border-bottom: 1px solid black;
-}
-
-.right {
-  text-align: right;
 }
     </style>
   </head>
@@ -229,12 +226,6 @@ var Rx = function() {
 Rx.prototype = Object.create(Field.prototype);
 Rx.prototype.constructor = Rx;
 
-Rx.prototype.cell_container = function() {
-    var cell = Field.prototype.cell_container.call(this);
-    cell.setAttribute('class', 'right');
-    return cell;
-}
-
 Rx.prototype.cell_contents = function(value) {
     value = parseInt(value);
     value = bytes_to_readable(value);
@@ -248,7 +239,6 @@ var Tx = function() {
 Tx.prototype = Object.create(Field.prototype);
 Tx.prototype.constructor = Tx;
 
-Tx.prototype.cell_container = Rx.prototype.cell_container;
 Tx.prototype.cell_contents = Rx.prototype.cell_contents;
 
 var AllowedIPs = function() {
