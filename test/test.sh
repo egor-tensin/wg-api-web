@@ -132,12 +132,14 @@ cleanup() {
     echo Cleaning up
     echo ------------------------------------------------------------------
 
-    local name
-    find "$base_dir/devices" -mindepth 1 -maxdepth 1 -type d -printf '%P\0' \
-            | while IFS= read -d '' -r name; do
-        echo "Removing interface: $name"
-        ip link delete "$name" type wireguard || true
-    done
+    if [ -d "$base_dir/devices" ]; then
+        local name
+        find "$base_dir/devices" -mindepth 1 -maxdepth 1 -type d -printf '%P\0' \
+                | while IFS= read -d '' -r name; do
+            echo "Removing interface: $name"
+            ip link delete "$name" type wireguard || true
+        done
+    fi
 
     echo "Removing $base_dir"
     rm -rf -- "$base_dir"
