@@ -17,10 +17,10 @@ jobs:
       - name: Test
         run: sudo ./test/test.sh
 
-  publish_docker:
+  publish:
     needs: [test]
     runs-on: ubuntu-latest
-    name: 'Publish / Docker Hub'
+    name: 'Publish'
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
     steps:
       - name: Checkout
