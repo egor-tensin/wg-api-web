@@ -1,0 +1,6 @@
+# I want docker-compose.yml to be copyable; and if the build settings is
+# present, and somebody copies it and runs docker-compose up -d, it will
+# complain that it can't build the image (which it stupid).
+services:
+  web:
+    build: .

@@ -9,7 +9,6 @@ x-default-settings:
 services:
   web:
     << : *default-settings
-    build: .
     depends_on: [api]
     image: egortensin/wg-api-web:latest
     ports:
