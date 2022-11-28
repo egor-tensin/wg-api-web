@@ -159,7 +159,7 @@ function in_code(text) {
 function send_request(endpoint, callback) {
     let request = new XMLHttpRequest();
     request.addEventListener('load', callback);
-    request.open('GET', '/api/' + endpoint);
+    request.open('GET', 'api/' + endpoint);
     request.send();
 }
 
