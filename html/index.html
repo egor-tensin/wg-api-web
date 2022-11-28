@@ -64,7 +64,7 @@ td, th[scope="row"] {
           </tr>
         </tbody>
       </table>
-      <table class="sortable">
+      <table id="peers" class="sortable">
         <thead>
           <tr>
             <th>Peer</th>
@@ -361,6 +361,7 @@ function peers_show() {
     data['result']['peers'].forEach(function(peer) {
         formatter.add_row(peer);
     });
+    peers_table_sort();
 }
 
 var aliases = {};
@@ -405,7 +406,39 @@ function loop() {
     }, update_interval_seconds * 1000);
 }
 
+// The number of the column last used for sorting (1-based indexing).
+// A positive number means ascending order; negative number means descending
+// order.
+var peers_last_sorted_by = 0;
+
+function peers_table_sort() {
+    if (!peers_last_sorted_by)
+        return;
+
+    let th = document.querySelector(`#peers thead tr :nth-child(${Math.abs(peers_last_sorted_by)})`);
+    th.click();
+    th.click();
+}
+
+function peers_table_save_sorting(th) {
+    let idx = th.cellIndex + 1;
+    if (Math.abs(peers_last_sorted_by) == idx) {
+        peers_last_sorted_by = -peers_last_sorted_by;
+    } else {
+        peers_last_sorted_by = idx;
+    }
+}
+
+function peers_table_setup() {
+    document.querySelectorAll('#peers th').forEach(function(th) {
+        th.addEventListener('click', function(event) {
+            peers_table_save_sorting(event.target);
+        }, false);
+    });
+}
+
 function main() {
+    peers_table_setup();
     update();
     loop();
 }
