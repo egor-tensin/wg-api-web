@@ -9,11 +9,13 @@ It uses [wg-api] to query data and formats it as a nice, sortable HTML table.
 Usage
 -----
 
-Clone the repository and run
+Copy the [docker-compose.yml] file and run
 
     WG_IFACE=wg0 docker-compose up -d
 
 Replace `WG_IFACE` with your interface name (or omit it to use wg0).
+
+[docker-compose.yml]: docker-compose.yml
 
 ### Peer aliases
 
