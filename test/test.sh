@@ -85,14 +85,16 @@ show_device() {
 }
 
 add_devices() {
-    add_device peer1
-    add_device peer2
-    add_device peer3
-    connect_devices peer1 peer2
-    connect_devices peer1 peer3
-    up_device peer1 peer2 peer3
+    add_device server
+    add_device client1
+    add_device client2
+    add_device client3
+    connect_devices server client1
+    connect_devices server client2
+    connect_devices server client3
+    up_device server client1 client2 client3
     sleep 2
-    show_device peer1 peer2 peer3
+    show_device server client1 client2 client3
 }
 
 build_services() {
@@ -102,7 +104,7 @@ build_services() {
 
     docker-compose pull api
     docker-compose build --force-rm --pull web
-    WG_IFACE=peer1 docker-compose up -d
+    WG_IFACE=server docker-compose up -d
 }
 
 run_curl() {
