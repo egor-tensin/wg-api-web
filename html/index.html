@@ -237,6 +237,22 @@ Endpoint.prototype.sortable_value = function(value) {
     return value;
 }
 
+Endpoint.prototype.cell_contents = function(value) {
+    value = this.sortable_value(value);
+    if (value == '-')
+        return Field.prototype.cell_contents.call(this, value);
+
+    let parts = value.split(':');
+    let ip = parts[0];
+
+    let elem = document.createElement('a');
+    elem.setAttribute('href', 'https://infobyip.com/ip-' + ip + '.html');
+    elem.setAttribute('target', '_blank');
+    elem.appendChild(document.createTextNode(value));
+
+    return [elem];
+}
+
 var Rx = function() {
     Field.call(this, 'receive_bytes');
 }
