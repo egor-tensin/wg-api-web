@@ -1,6 +1,8 @@
 wg-api-web
 ==========
 
+[![CI](https://github.com/egor-tensin/wg-api-web/actions/workflows/ci.yml/badge.svg)](https://github.com/egor-tensin/wg-api-web/actions/workflows/ci.yml)
+
 This is a simple web monitoring tool for WireGuard connections.
 It uses [wg-api] to query data and formats it as a nice, sortable HTML table.
 
