@@ -10,14 +10,17 @@ services:
   web:
     << : *default-settings
     depends_on: [api]
-    image: egortensin/wg-api-web:latest
+    image: egortensin/wg-api-web:1
     ports:
       - '8090:80'
     volumes:
       - './data:/data:ro'
   api:
     << : *default-settings
-    image: james/wg-api:latest
+    # Pin to 'latest' or to a different hash if running on something other than
+    # x64. The hash was used because the upstream image doesn't use versions
+    # (as of Jan 2023).
+    image: james/wg-api@sha256:76428f4fe0efee9e0d17c8d89920535d536675f604a9f5081075615cac0d2411
     cap_add:
       - NET_ADMIN
     network_mode: host
