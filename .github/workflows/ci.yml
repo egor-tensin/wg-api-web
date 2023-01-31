@@ -59,6 +59,9 @@ jobs:
       - name: Build and publish
         uses: docker/build-push-action@v3
         with:
+          # Without context, .dockerignore isn't respected?
+          # https://stackoverflow.com/a/74552407/514684
+          context: .
           labels: '${{ steps.meta.outputs.labels }}'
           platforms: '${{ steps.platforms.outputs.platforms }}'
           push: true
