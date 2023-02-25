@@ -105,7 +105,7 @@ build_services() {
     echo ------------------------------------------------------------------
 
     docker-compose pull api
-    docker-compose build --force-rm --pull web
+    docker-compose build --force-rm --progress plain --pull web
     WG_IFACE=server docker-compose up -d
 }
 
