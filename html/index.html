@@ -239,11 +239,17 @@ Endpoint.prototype.sortable_value = function(value) {
 
 Endpoint.prototype.cell_contents = function(value) {
     value = this.sortable_value(value);
-    if (value == '-')
+    if (value == '' || value == '-')
         return Field.prototype.cell_contents.call(this, value);
 
-    let parts = value.split(':');
-    let ip = parts[0];
+    let ip = value;
+
+    let idx = value.lastIndexOf(':');
+    if (idx >= 0)
+        ip = value.substring(0, idx);
+
+    if (ip.charAt(0) == '[' && ip.slice(-1) == ']')
+        ip = ip.slice(1, -1);
 
     let elem = document.createElement('a');
     elem.setAttribute('href', 'https://infobyip.com/ip-' + ip + '.html');
