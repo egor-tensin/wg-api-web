@@ -1,5 +1,21 @@
 version: '3'
 
+# The main difference between this docker-compose.yml and the root
+# docker-compose.yml are listed below.
+#
+# * Instead of modifying the default bridge network as in root
+#   docker-compose.yml, we create a new network, wg_web_api_network.
+# * Added the "wg" service, running the lscr.io/linuxserver/wireguard image.
+#     * It's configured as a basic "server" setup with 3 peers.
+#     * Make sure it's added to the wg_web_api_network.
+#     * Apart from the WireGuard port, the wg-api port is published as well.
+# * The "web" service is unchanged.
+# * The "api" service requires a few changes.
+#     * Instead of the host network mode, the "api" service runs in the wg's
+#       networking namespace. This allows is to have access to wg's WireGuard
+#       device.
+#     * The --listen argument is 0.0.0.0:1234 instead of 192.168.177.1:1234.
+
 services:
   wg:
     image: lscr.io/linuxserver/wireguard:latest
@@ -7,7 +23,7 @@ services:
     environment:
       - SERVERURL=wireguard.domain.com
       - SERVERPORT=51820
-      - PEERS=1
+      - PEERS=3
       - INTERNAL_SUBNET=10.13.13.0
       - LOG_CONFS=true
     networks:
@@ -15,6 +31,7 @@ services:
     ports:
       - 51820:51820/udp
       - '192.168.177.1:1234:1234'
+    # Uncomment to save configuration to the config/ directory:
     #volumes:
     #  - ./config:/config
     cap_add:
@@ -26,6 +43,7 @@ services:
     restart: unless-stopped
     ports:
       - '8090:80'
+    # Uncomment if you use peer aliases:
     #volumes:
     #  - './data:/data:ro'
   api:
