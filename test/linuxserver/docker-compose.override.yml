@@ -1,4 +1,14 @@
 # This file is here for the same reason as the root docker-compose.override.yml.
+# In addition, it defines a peer service.
 services:
   web:
     build: ../..
+  peer1:
+    build:
+      context: .
+      dockerfile: Dockerfile.peer1
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
