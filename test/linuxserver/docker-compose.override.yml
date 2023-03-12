@@ -1,0 +1,4 @@
+# This file is here for the same reason as the root docker-compose.override.yml.
+services:
+  web:
+    build: ../..

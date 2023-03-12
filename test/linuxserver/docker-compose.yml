@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  wg:
+    image: lscr.io/linuxserver/wireguard:latest
+    restart: unless-stopped
+    environment:
+      - SERVERURL=wireguard.domain.com
+      - SERVERPORT=51820
+      - PEERS=1
+      - INTERNAL_SUBNET=10.13.13.0
+      - LOG_CONFS=true
+    networks:
+      - wg_web_api_network
+    ports:
+      - 51820:51820/udp
+      - '192.168.177.1:1234:1234'
+    #volumes:
+    #  - ./config:/config
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+  web:
+    image: egortensin/wg-api-web:1
+    depends_on: [api]
+    restart: unless-stopped
+    ports:
+      - '8090:80'
+    #volumes:
+    #  - './data:/data:ro'
+  api:
+    image: james/wg-api:latest
+    command: wg-api --device wg0 --listen 0.0.0.0:1234
+    depends_on: [wg]
+    restart: unless-stopped
+    network_mode: service:wg
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  wg_web_api_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.177.0/24

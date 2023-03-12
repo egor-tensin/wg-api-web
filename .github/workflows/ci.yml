@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  test_host:
     runs-on: ubuntu-latest
-    name: Test
+    name: Test (host)
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -17,8 +17,17 @@ jobs:
       - name: Test
         run: sudo ./test/host/test.sh
 
+  test_linuxserver:
+    runs-on: ubuntu-latest
+    name: Test (LinuxServer)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Test
+        run: sudo ./test/linuxserver/test.sh
+
   publish:
-    needs: [test]
+    needs: [test_host, test_linuxserver]
     runs-on: ubuntu-latest
     name: 'Publish'
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
