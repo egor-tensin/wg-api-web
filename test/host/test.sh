@@ -142,6 +142,7 @@ main() {
     add_devices
     build_services
     "$script_dir/../check_api.sh"
+    "$script_dir/../check_web.sh"
 }
 
 main "$@"
