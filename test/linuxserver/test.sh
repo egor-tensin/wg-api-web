@@ -40,6 +40,8 @@ build_services() {
     echo docker-compose up
     echo ------------------------------------------------------------------
     docker-compose up -d
+
+    sleep 5
 }
 
 ping_server() {
@@ -67,7 +69,6 @@ main() {
         exit 1
     fi
     build_services
-    sleep 3
     ping_server
     "$script_dir/../check_web.sh"
 }

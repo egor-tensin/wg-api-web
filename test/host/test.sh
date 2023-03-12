@@ -93,7 +93,7 @@ add_devices() {
     connect_devices server client2
     connect_devices server client3
     up_device server client1 client2 client3
-    sleep 2
+    sleep 5
     show_device server client1 client2 client3
 }
 
