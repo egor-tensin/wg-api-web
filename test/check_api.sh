@@ -3,8 +3,10 @@
 set -o errexit -o nounset -o pipefail
 shopt -s inherit_errexit lastpipe
 
+readonly base_url='http://192.168.177.1:1234/'
+
 run_curl() {
-    curl -sS -D - --connect-timeout 3 http://192.168.177.1:1234/ "$@"
+    curl -sS -D - --connect-timeout 3 "$@" -- "$base_url"
 }
 
 run_curl_api() {
@@ -30,4 +32,4 @@ main() {
     check_api
 }
 
-main "$@"
+main
