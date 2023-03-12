@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt install -y wireguard-tools
       - name: Test
-        run: sudo ./test/test.sh
+        run: sudo ./test/host/test.sh
 
   publish:
     needs: [test]

@@ -7,8 +7,6 @@ script_dir="$( dirname -- "${BASH_SOURCE[0]}" )"
 script_dir="$( cd -- "$script_dir" && pwd )"
 readonly script_dir
 
-devices_only=
-
 base_dir="$( mktemp -d )"
 readonly base_dir
 
@@ -116,29 +114,6 @@ build_services() {
     WG_IFACE=server docker-compose up -d
 }
 
-run_curl() {
-    curl -sS -D - --connect-timeout 3 http://192.168.177.1:1234/ "$@"
-}
-
-run_curl_api() {
-    run_curl -H 'Content-Type: application/json' "$@"
-}
-
-call_api_method() {
-    local method
-    for method; do
-        echo ------------------------------------------------------------------
-        echo "Checking API method: $method"
-        echo ------------------------------------------------------------------
-        run_curl_api -d '{"jsonrpc": "2.0", "method": "'"$method"'", "params": {}}'
-    done
-}
-
-check_api() {
-    call_api_method ListPeers
-    call_api_method GetDeviceInfo
-}
-
 cleanup() {
     echo ------------------------------------------------------------------
     echo Cleaning up
@@ -156,41 +131,17 @@ cleanup() {
     echo "Removing $base_dir"
     rm -rf -- "$base_dir"
 
-    if [ -z "$devices_only" ]; then
-        echo "Brining down containers..."
-        docker-compose down -v --remove-orphans
-    fi
+    echo "Brining down containers..."
+    docker-compose down -v --remove-orphans
 }
 
 main() {
     cd -- "$script_dir/.."
     trap cleanup EXIT
 
-    local opt
-    while getopts ':i' opt "$@"; do
-        case "$opt" in
-            i)
-                devices_only=1
-                ;;
-            :)
-                echo "usage error: required argument missing for option -$OPTARG" >&2
-                exit 1;
-                ;;
-            *)
-                echo "usage error: invalid option -$OPTARG" >&2;
-                exit 1;
-                ;;
-        esac
-    done
-
     add_devices
-
-    if [ -z "$devices_only" ]; then
-        build_services
-        check_api
-    else
-        while true; do sleep 1; done
-    fi
+    build_services
+    "$script_dir/../check_api.sh"
 }
 
 main "$@"
