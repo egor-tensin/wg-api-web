@@ -1,6 +1,6 @@
 version: '3'
 
-# The main difference between this docker-compose.yml and the root
+# The main differences between this docker-compose.yml and the root
 # docker-compose.yml are listed below.
 #
 # * Instead of modifying the default bridge network as in root
