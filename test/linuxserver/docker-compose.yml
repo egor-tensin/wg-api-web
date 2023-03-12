@@ -25,6 +25,7 @@ services:
       - SERVERPORT=51820
       - PEERS=3
       - INTERNAL_SUBNET=10.13.13.0
+      - ALLOWEDIPS=10.13.13.0/24
       - PEERDNS=off
       - LOG_CONFS=true
     networks:
