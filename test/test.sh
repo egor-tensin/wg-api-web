@@ -101,11 +101,18 @@ add_devices() {
 
 build_services() {
     echo ------------------------------------------------------------------
-    echo Building
+    echo Pull third-party images
     echo ------------------------------------------------------------------
-
     docker-compose pull api
+
+    echo ------------------------------------------------------------------
+    echo Build wg-api-web
+    echo ------------------------------------------------------------------
     docker-compose build --force-rm --progress plain --pull web
+
+    echo ------------------------------------------------------------------
+    echo docker-compose up
+    echo ------------------------------------------------------------------
     WG_IFACE=server docker-compose up -d
 }
 
@@ -120,6 +127,9 @@ run_curl_api() {
 call_api_method() {
     local method
     for method; do
+        echo ------------------------------------------------------------------
+        echo "Checking API method: $method"
+        echo ------------------------------------------------------------------
         run_curl_api -d '{"jsonrpc": "2.0", "method": "'"$method"'", "params": {}}'
     done
 }
