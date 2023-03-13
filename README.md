@@ -35,7 +35,9 @@ on the right.
 ### linuxserver/wireguard
 
 To use with LinuxServer's [wireguard image], see [this docker-compose.yml].
-Adjust how you see fit.
+Adjust the docker-compose.yml file how you see fit.
+Pat attention to the comments at the top: they describe the changes required
+to make it work.
 
 [wireguard image]: https://docs.linuxserver.io/images/docker-wireguard
 [this docker-compose.yml]: test/linuxserver/docker-compose.yml
