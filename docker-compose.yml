@@ -26,4 +26,6 @@ networks:
     ipam:
       driver: default
       config:
+        # The network is hardcoded; please don't change. If you run into
+        # problems, let me know.
         - subnet: 192.168.177.0/24
