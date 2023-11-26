@@ -6,7 +6,7 @@ wg-api-web
 This is a simple web monitoring tool for WireGuard connections.
 It uses [wg-api] to query data and formats it as a nice, sortable HTML table.
 
-See an example setup at https://egort.name/wg-api-web/.
+See an example setup at https://tensin.name/wg-api-web/.
 
 [wg-api]: https://github.com/jamescun/wg-api
 
