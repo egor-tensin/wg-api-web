@@ -131,7 +131,10 @@ cleanup() {
     echo "Removing $base_dir"
     rm -rf -- "$base_dir"
 
-    echo "Brining down containers..."
+    echo 'Showing the latest container logs...'
+    docker-compose logs --tail 25
+
+    echo "Bringing down containers..."
     docker-compose down -v --remove-orphans
 }
 
