@@ -106,11 +106,17 @@ const MSECS_IN_DAY = 24 * MSECS_IN_HOUR;
 
 function date_to_readable(date) {
     const now = Date.now();
-    if (Date.now() < date) {
-        return 'future???';
+    let duration = now - date;
+
+    if (Math.abs(duration) < 2 * MSECS_IN_SEC) {
+        // Most likely, the time is not synchronized either on the server or
+        // the client.
+        return 'now';
     }
 
-    let duration = now - date;
+    if (duration < 0) {
+        return 'future???';
+    }
 
     let days = Math.floor(duration / MSECS_IN_DAY);
     duration -= days * MSECS_IN_DAY;
