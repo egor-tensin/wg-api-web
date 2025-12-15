@@ -17,14 +17,14 @@ fix_permissions() {
 }
 
 docker_build() {
-    docker-compose build --force-rm --progress plain --pull "$@"
+    docker compose build --force-rm --progress plain --pull "$@"
 }
 
 build_services() {
     echo ------------------------------------------------------------------
     echo Pull third-party images
     echo ------------------------------------------------------------------
-    docker-compose pull wg api
+    docker compose pull wg api
 
     echo ------------------------------------------------------------------
     echo Build wg-api-web
@@ -37,9 +37,9 @@ build_services() {
     docker_build peer1
 
     echo ------------------------------------------------------------------
-    echo docker-compose up
+    echo docker compose up
     echo ------------------------------------------------------------------
-    docker-compose up -d
+    docker compose up -d
 
     sleep 5
 }
@@ -55,7 +55,7 @@ cleanup() {
     echo ------------------------------------------------------------------
     echo Cleaning up
     echo ------------------------------------------------------------------
-    docker-compose down -v --remove-orphans
+    docker compose down -v --remove-orphans
     fix_permissions
 }
 

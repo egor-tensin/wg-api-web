@@ -15,7 +15,7 @@ Usage
 
 Copy the [docker-compose.yml] file and run
 
-    WG_IFACE=wg0 docker-compose up -d
+    WG_IFACE=wg0 docker compose up -d
 
 Replace `WG_IFACE` with your interface name (or omit it to use wg0).
 

@@ -101,17 +101,17 @@ build_services() {
     echo ------------------------------------------------------------------
     echo Pull third-party images
     echo ------------------------------------------------------------------
-    docker-compose pull api
+    docker compose pull api
 
     echo ------------------------------------------------------------------
     echo Build wg-api-web
     echo ------------------------------------------------------------------
-    docker-compose build --force-rm --progress plain --pull web
+    docker compose build --force-rm --progress plain --pull web
 
     echo ------------------------------------------------------------------
-    echo docker-compose up
+    echo docker compose up
     echo ------------------------------------------------------------------
-    WG_IFACE=server docker-compose up -d
+    WG_IFACE=server docker compose up -d
 }
 
 cleanup() {
@@ -132,10 +132,10 @@ cleanup() {
     rm -rf -- "$base_dir"
 
     echo 'Showing the latest container logs...'
-    docker-compose logs --tail 25
+    docker compose logs --tail 25
 
     echo "Bringing down containers..."
-    docker-compose down -v --remove-orphans
+    docker compose down -v --remove-orphans
 }
 
 main() {
