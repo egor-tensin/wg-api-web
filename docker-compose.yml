@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   web:
     image: egortensin/wg-api-web:1
