@@ -11,7 +11,7 @@ jobs:
     name: Test (host)
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install dependencies
         run: sudo apt install -y wireguard-tools
       - name: Test
@@ -22,7 +22,7 @@ jobs:
     name: Test (LinuxServer)
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Test
         run: sudo ./test/linuxserver/test.sh
 
@@ -33,7 +33,7 @@ jobs:
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       # https://github.com/docker/metadata-action#semver
       - id: meta
         name: Docker Hub metadata
@@ -66,7 +66,7 @@ jobs:
               echo 'platforms=amd64,armhf,arm64' >> "$GITHUB_OUTPUT"
           fi
       - name: Build and publish
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Without context, .dockerignore isn't respected?
           # https://stackoverflow.com/a/74552407/514684
