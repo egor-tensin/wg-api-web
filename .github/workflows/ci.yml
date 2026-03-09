@@ -65,7 +65,7 @@ jobs:
               echo 'platforms=amd64,armhf,arm64' >> "$GITHUB_OUTPUT"
           fi
       - name: Build and publish
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           # Without context, .dockerignore isn't respected?
           # https://stackoverflow.com/a/74552407/514684
