@@ -112,6 +112,9 @@ build_services() {
     echo docker compose up
     echo ------------------------------------------------------------------
     WG_IFACE=server docker compose up -d
+
+    # Wait until nginx is fully set up:
+    sleep 3
 }
 
 cleanup() {
