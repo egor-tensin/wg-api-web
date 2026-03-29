@@ -1,5 +1,15 @@
 version: 2
 updates:
+  - package-ecosystem: docker
+    directores:
+      - '**/*'
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker-compose
+    directories:
+      - '**/*'
+    schedule:
+      interval: weekly
   - package-ecosystem: github-actions
     directory: /
     schedule:
