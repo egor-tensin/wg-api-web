@@ -106,7 +106,7 @@ build_services() {
     echo ------------------------------------------------------------------
     echo Build wg-api-web
     echo ------------------------------------------------------------------
-    docker compose build --force-rm --progress plain --pull web
+    docker compose --progress plain build --force-rm --pull web
 
     echo ------------------------------------------------------------------
     echo docker compose up

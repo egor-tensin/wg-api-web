@@ -17,7 +17,7 @@ fix_permissions() {
 }
 
 docker_build() {
-    docker compose build --force-rm --progress plain --pull "$@"
+    docker compose --progress plain build --force-rm --pull "$@"
 }
 
 build_services() {
