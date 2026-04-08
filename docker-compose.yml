@@ -10,7 +10,7 @@ services:
   api:
     # Pin to 'latest' or to a different hash if running on something other than
     # x64. The hash was used because the upstream image doesn't use versions
-    # (as of Jan 2023).
+    # (as of April 2026).
     image: james/wg-api@sha256:d23df70b23799240a286e36551f8f02d0085f0c1b0798530582ae0e806b3503d
     command: wg-api --device "${WG_IFACE:-wg0}" --listen 192.168.177.1:1234
     restart: unless-stopped
