@@ -2,6 +2,7 @@ services:
   web:
     depends_on: [api]
     image: egortensin/wg-api-web:1
+    init: true
     ports:
       - '8090:80'
     restart: unless-stopped
@@ -14,6 +15,7 @@ services:
     # The upstream image doesn't use tags (as of April '26), just hashes, so
     # we're pinning to latest.
     image: james/wg-api
+    init: true
     network_mode: host
     restart: unless-stopped
 
