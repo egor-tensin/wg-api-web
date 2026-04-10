@@ -2,6 +2,11 @@ name: CI
 
 on:
   push:
+  schedule:
+    # The time was chosen randomly. The reason for this even existing is the
+    # fact that the wg-api image is not pinned to a specific version currently.
+    # If it gets pinned, this can be removed.
+    - cron: '30 1 * * 0'
   workflow_dispatch:
 
 jobs:
