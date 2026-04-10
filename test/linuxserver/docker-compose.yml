@@ -16,8 +16,9 @@
 
 services:
   wg:
-    image: lscr.io/linuxserver/wireguard:latest
-    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     environment:
       # These settings are mostly for testing; you most likely would want
       # to adjust them.
@@ -28,41 +29,40 @@ services:
       - ALLOWEDIPS=10.13.13.0/24
       - PEERDNS=off
       - LOG_CONFS=true
+    image: lscr.io/linuxserver/wireguard:latest
     networks:
       - wg_web_api_network
     ports:
       - 51820:51820/udp
       - '192.168.177.1:1234:1234'
+    restart: unless-stopped
     volumes:
       # A example configuration used for testing.
       - ./example_config:/config
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
   web:
-    image: egortensin/wg-api-web:1
     depends_on: [api]
-    restart: unless-stopped
+    image: egortensin/wg-api-web:1
     ports:
       - '8090:80'
+    restart: unless-stopped
     # Uncomment if you use peer aliases:
     #volumes:
     #  - './data:/data:ro'
   api:
-    image: james/wg-api:latest
-    command: wg-api --device wg0 --listen 0.0.0.0:1234
-    depends_on: [wg]
-    restart: unless-stopped
-    network_mode: service:wg
     cap_add:
       - NET_ADMIN
+    command: wg-api --device wg0 --listen 0.0.0.0:1234
+    depends_on: [wg]
+    image: james/wg-api:latest
+    network_mode: service:wg
+    restart: unless-stopped
 
 networks:
   wg_web_api_network:
     driver: bridge
     ipam:
-      driver: default
       config:
         # The network is hardcoded; please don't change. If you run into
         # problems, let me know.
         - subnet: 192.168.177.0/24
+      driver: default
