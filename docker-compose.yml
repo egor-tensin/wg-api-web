@@ -8,9 +8,8 @@ services:
     volumes:
       - './data:/data:ro'
   api:
-    # Pin to 'latest' or to a different hash if running on something other than
-    # x64. The hash was used because the upstream image doesn't use versions
-    # (as of April 2026).
+    # The upstream image doesn't use tags (as of April '26), just hashes, so
+    # we're pinning to latest.
     image: james/wg-api
     command: wg-api --device "${WG_IFACE:-wg0}" --listen 192.168.177.1:1234
     restart: unless-stopped
