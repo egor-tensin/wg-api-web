@@ -15,7 +15,7 @@ jobs:
     name: Test (host)
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install dependencies
         run: sudo apt install -y wireguard-tools
       - name: Test
@@ -26,7 +26,7 @@ jobs:
     name: Test (LinuxServer)
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Test
         run: sudo ./test/linuxserver/test.sh
 
@@ -36,7 +36,7 @@ jobs:
     name: 'Publish'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       # https://github.com/docker/metadata-action#semver
       - id: meta
         name: Docker Hub metadata
